@@ -1,0 +1,16 @@
+#!/bin/bash
+
+function kill_at_port {
+	PID=`lsof -t -i:${1}`
+	if [ "$PID" != "" ]; then
+        echo Killing pid $PID at port $1
+		kill -9 $PID
+    else
+        echo Nothing to kill at port $1
+	fi
+}
+
+# Kill test nodes.
+for i in $(seq 0 6); do
+    kill_at_port 854$i
+done
