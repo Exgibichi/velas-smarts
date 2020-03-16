@@ -9,6 +9,8 @@ To generate spec file run `npm run make-spec`.
 To compile contracts `npm run compile-posdao-contracts`.
 To run specific script `node scripts/<script-name>.js`
 
+To sign transactions copy key files to ./accounts/keystore directory and type keystore password to ./config/password.
+
 ## Requirements
 
 To integrate with [parity-ethereum](https://github.com/paritytech/parity-ethereum), the following structure of folders is assumed:
