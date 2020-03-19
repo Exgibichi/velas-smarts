@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider());//"https://dai.poa.network"));
+const web3 = new Web3(new Web3.providers.HttpProvider());
 const utils = require('./utils/utils');
 
 const VALIDATOR_SET_CONTRACT = '0x1000000000000000000000000000000000000001';
@@ -215,19 +215,9 @@ async function main() {
     constructor: await deploy.encodeABI()
   };
 
-  // testnet nodes
-  spec.nodes = [
-    'enode://4f7398de1f2b73ebed9145b85d8c1e21d0b8138434a0bf5ebf4388f0151a77d13177e9508e2dd2fc8b81b5f6eef26908a01965a34b9b100289d59dbeb03eb4bb@138.68.71.224:30304',
-    'enode://f4a713da981f5603f5cf0df4cec50f9e7ad3cbef5dab62e9ad45f4e37d7c133ad13b9a4d225ff3840a8217682e11bcc6f0a798518bc1e01ddbcf148dd36c40c2@207.154.194.246:30304',
-    'enode://b93265aa87bad9309a0ffa927bc7a9048c9dd38a30f1bc6a0b74c5b765e16aeb699937b8e09387d475988ccf8bc1b6e7ca4f05a0c9870372278612cfc26162f0@207.154.194.161:30304'
-  ]
-
   // Premine account
   spec.accounts[balanceAddress] = {
-    balance: web3.utils.toWei('1000000000', 'ether')
-  }
-  spec.accounts['0x6882585Ef0B67f0acb441a9Bde1d8581f35c0c5b'] = {
-    balance: web3.utils.toWei('1000000000', 'ether')
+    balance: web3.utils.toWei('2000000000', 'ether')
   }
 
   console.log('Saving spec.json file ...');
@@ -239,5 +229,3 @@ async function compile(dir, contractName) {
   const compiled = await utils.compile(dir, contractName);
   return {abi: compiled.abi, bytecode: compiled.evm.bytecode.object};
 }
-
-// NETWORK_NAME=DPoSChain NETWORK_ID=101 OWNER=0x1092a1E3A3F2FB2024830Dd12064a4B33fF8EbAe INITIAL_VALIDATORS=0xeE385a1df869A468883107B0C06fA8791b28A04f,0x71385ae87c4b93db96f02f952be1f7a63f6057a6,0x190ec582090ae24284989af812f6b2c93f768ecd STAKING_ADDRESSES=0xe5aa2949ac94896bb2c5c75d9d5a88eb9f7c6b59,0x63a9344ae66c1f26d400b3ea4750a709c3aa6cfa,0xa5f6858d6254329a67cddab2dc04d795c5257709 STAKING_EPOCH_DURATION=120954 STAKE_WITHDRAW_DISALLOW_PERIOD=4320 COLLECT_ROUND_LENGTH=114 FIRST_VALIDATOR_IS_UNREMOVABLE=true ERC20_RESTRICTED=false node scripts/make_spec.js
