@@ -44,7 +44,7 @@ async function main() {
   console.log('Step duration will be changed at ', new Date(newStepDurationTimestamp * 1000).toLocaleTimeString('en-US'));
 */
   const exec = promisify(require('child_process').exec);
-  const { stdout, stderr } = await exec('../../parity-ethereum/target/release/parity --version');
+  const { stdout, stderr } = await exec('../../velas-blockchain/target/release/velasblockchain --version');
 
   assert(!stderr);
 
