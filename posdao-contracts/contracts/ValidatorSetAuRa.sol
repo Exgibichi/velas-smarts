@@ -103,7 +103,7 @@ contract ValidatorSetAuRa is UpgradeabilityAdmin, IValidatorSetAuRa {
     // ============================================== Constants =======================================================
 
     /// @dev The max number of validators.
-    uint256 public constant MAX_VALIDATORS = 16;
+    uint256 public constant MAX_VALIDATORS = 19;
 
     // ================================================ Events ========================================================
 
