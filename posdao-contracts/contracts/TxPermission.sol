@@ -33,6 +33,9 @@ contract TxPermission is UpgradeableOwned, ITxPermission {
     /// Used by the `blockGasLimit` public getter.
     uint256 public constant BLOCK_GAS_LIMIT_REDUCED = 21000000;
 
+    /// @dev A constant for a mininal gas price
+    uint256 public constant MIN_GAS_PRICE = 21000;
+
     // ============================================== Modifiers =======================================================
 
     /// @dev Ensures the `initialize` function was called before.
@@ -195,14 +198,14 @@ contract TxPermission is UpgradeableOwned, ITxPermission {
                 );
 
                 return (callable ? CALL : NONE, false);
-            } else if (_gasPrice > 0) {
+            } else if (_gasPrice >= MIN_GAS_PRICE) {
                 // The other functions of ValidatorSetAuRa contract can be called
                 // by anyone except validators' mining addresses if gasPrice is not zero
                 return (validatorSetContract.isValidator(_sender) ? NONE : CALL, false);
             }
         }
 
-        if (validatorSetContract.isValidator(_sender) && _gasPrice > 0) {
+        if (validatorSetContract.isValidator(_sender) && _gasPrice >= MIN_GAS_PRICE) {
             // Let the validator's mining address send their accumulated tx fees to some wallet
             return (_sender.balance > 0 ? BASIC : NONE, false);
         }
@@ -214,7 +217,7 @@ contract TxPermission is UpgradeableOwned, ITxPermission {
 
         // In other cases let the `_sender` create any transaction with non-zero gas price,
         // don't let them use a zero gas price
-        return (_gasPrice > 0 ? ALL : NONE, false);
+        return (_gasPrice >= MIN_GAS_PRICE ? ALL : NONE, false);
     }
 
     /// @dev Returns the current block gas limit which depends on the stage of the current
