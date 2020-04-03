@@ -20,6 +20,7 @@
           "0": "0x3000000000000000000000000000000000000001"
         },
         "twoThirdsMajorityTransition": 1000000,
+        "posdaoTransition": 50000,
         "blockGasLimitContractTransitions": {
           "0": "0x4000000000000000000000000000000000000001"
         }
@@ -252,5 +253,10 @@
         }
       }
     }
-  }
+  },
+  "nodes" : [
+     "enode://49dffebdceda65e62e7fe14a1e19a28d0278e0d6381cd6d51ad92963da1ac93b7f1ddbd9d52c777a18bc0e126109163888655ba8b91b628b6d6cbd45e11c0942@213.167.79.42:30304",
+     "enode://f18e90ae5548dc53192a6f1b4a05b4fd2053e92cf3d1157507a53c2d989ce7ed213f88278219c7a77bf32073df94eed40f528341ff52d977dd6cc4e664e1f98a@213.167.79.41:30304",
+     "enode://cccbcda102802dbeb5564c5ecb1f4d3062a7cac65281f5696defcc9dd1fdce01ef9dd00192f884fa53800d74cd4acf77eda131bf946d60c81b24d7a624d8b693@213.167.79.40:30304"
+  ]
 }

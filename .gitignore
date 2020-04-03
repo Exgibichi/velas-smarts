@@ -2,7 +2,7 @@
 \#*#
 .#*
 *~
-
+.history
 # Vim backups
 .*.sw[po]
 
