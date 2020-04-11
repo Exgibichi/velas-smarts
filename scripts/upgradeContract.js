@@ -9,8 +9,8 @@ async function main() {
   const web3 = new Web3('http://138.68.71.224:8545');
 
   try {
-    const contractName = 'TxPermission'
-    const txPermissionContract = require('../utils/getContract')('TxPermission', web3)
+    const contractName = 'BlockRewardAuRa'
+    const contractToUpgrade = require('../utils/getContract')('BlockRewardAuRa', web3)
   
     const contractsPath = path.join(__dirname, '..', 'posdao-contracts/contracts/')
     const compiled = await utils.compile(
@@ -20,13 +20,13 @@ async function main() {
     const bytecode = compiled.evm.bytecode.object
   
     //console.log(txPermissionContract)
-    console.log('Gas limit before:', await txPermissionContract.instance.methods.blockGasLimit().call())
+    //console.log('Gas limit before:', await txPermissionContract.instance.methods.blockGasLimit().call())
 
     // deploy contract on new address
     const contract = new web3.eth.Contract(compiled.abi)
     const deploy = await contract.deploy({data: '0x' + bytecode}).send({
       from: constants.OWNER,
-      gas: '1600000',
+      gas: '16000000',
       gasPrice: '0'
     })
     //console.log('deploy:', deploy)
@@ -36,17 +36,17 @@ async function main() {
 
     // call proxy upgrade
     const proxyContractAbi = require('../posdao-contracts/build/contracts/AdminUpgradeabilityProxy').abi
-    const proxyContract = new web3.eth.Contract(proxyContractAbi, constants.PERMISSION_CONTRACT_ADDRESS)
+    const proxyContract = new web3.eth.Contract(proxyContractAbi, contractToUpgrade.address)
 
     console.log('implementation before:', await proxyContract.methods.implementation().call())
     const resp = await proxyContract.methods.upgradeTo(newAddress).send({
       from: constants.OWNER,
-      gas: '1600000',
+      gas: '16000000',
       gasPrice: '0'
     })
     //console.log('proxy response:', resp)
 
-    console.log('Gas limit after:', await txPermissionContract.instance.methods.blockGasLimit().call())
+    //console.log('Gas limit after:', await txPermissionContract.instance.methods.blockGasLimit().call())
     console.log('implementation after', await proxyContract.methods.implementation().call())
   } catch(e) {
     console.log(e);
