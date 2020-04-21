@@ -281,6 +281,7 @@ contract BlockRewardAuRaBase is UpgradeableOwned, IBlockRewardAuRa {
 
             // Choose new validators
             validatorSetContract.newValidatorSet();
+            stakingContract.executeParamsChange();
 
             // Snapshot total amounts staked into the pools
             uint256 i;
