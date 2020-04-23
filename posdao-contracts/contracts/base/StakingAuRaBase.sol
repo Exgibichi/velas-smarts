@@ -541,7 +541,13 @@ contract StakingAuRaBase is UpgradeableOwned, IStakingAuRa {
     function setDelegatorMinStake(uint256 _minStake) external onlyOwner onlyInitialized {
         delegatorMinStake = _minStake;
     }
-
+function setStakingEpochDuration(uint256 _stakingEpochDuration) external onlyOwner onlyInitialized {
+      stakingEpochDuration = _stakingEpochDuration;
+}
+    
+function setStakeWithdrawDisallowPeriod(uint256 _stakeWithdrawDisallowPeriod) external onlyOwner onlyInitialized {
+      stakeWithdrawDisallowPeriod = _stakeWithdrawDisallowPeriod;
+}
     // =============================================== Getters ========================================================
 
     /// @dev Returns an array of the current active pools (the staking addresses of candidates and validators).
