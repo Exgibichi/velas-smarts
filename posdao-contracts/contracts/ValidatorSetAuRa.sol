@@ -594,6 +594,11 @@ contract ValidatorSetAuRa is UpgradeabilityAdmin, IValidatorSetAuRa {
         return (_finalizeValidators.list, _finalizeValidators.forNewEpoch);
     }
 
+
+    function banDuration() public view returns(uint256) {
+       return 2 * stakingContract.stakingEpochDuration();
+    }
+    
     // ============================================== Internal ========================================================
 
     /// @dev Updates the total reporting counter (see the `reportingCounterTotal` public mapping) for the current
@@ -836,8 +841,8 @@ contract ValidatorSetAuRa is UpgradeabilityAdmin, IValidatorSetAuRa {
     /// Used by the `_removeMaliciousValidator` internal function.
     function _banUntil() internal view returns(uint256) {
         uint256 blocksUntilEnd = stakingContract.stakingEpochEndBlock() - _getCurrentBlockNumber();
-        // ~90 days, at least 12 full staking epochs (for 5 seconds block)
-        return _getCurrentBlockNumber() + 12 * stakingContract.stakingEpochDuration() + blocksUntilEnd;
+        // ~1 day, at least 2 full staking epochs (for 5 seconds block)
+        return _getCurrentBlockNumber() + 2 * stakingContract.stakingEpochDuration() + blocksUntilEnd;
     }
 
     /// @dev Returns the current block number. Needed mostly for unit tests.
