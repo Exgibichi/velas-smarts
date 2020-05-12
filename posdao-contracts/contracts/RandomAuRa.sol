@@ -52,6 +52,12 @@ contract RandomAuRa is UpgradeabilityAdmin, IRandomAuRa {
         _;
     }
 
+       /// @dev Ensures the caller is the StakingAuRa contract address.
+        modifier onlyStakingContract() {
+            require(msg.sender == address(validatorSetContract.stakingContract()));
+            _;
+        }
+
     // =============================================== Setters ========================================================
 
     /// @dev Called by the validator's node to store a hash and a cipher of the validator's number on each collection
@@ -179,6 +185,11 @@ contract RandomAuRa is UpgradeabilityAdmin, IRandomAuRa {
 
         // Clear unnecessary info about previous collection round.
         _clearOldCiphers(currentRound);
+    }
+
+ /// @dev Change collectRoundLength parameter
+    function changeCollectRoundLength(uint256 newCollectRoundLength) external onlyStakingContract onlyInitialized {
+        collectRoundLength = newCollectRoundLength;
     }
 
     // =============================================== Getters ========================================================

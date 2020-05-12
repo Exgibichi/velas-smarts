@@ -7,4 +7,6 @@ interface IRandomAuRa {
     function commitHashCallable(address, bytes32) external view returns(bool);
     function currentSeed() external view returns(uint256);
     function revealNumberCallable(address, uint256) external view returns(bool);
+    function collectRoundLength() external view returns(uint256);
+    function changeCollectRoundLength(uint256 newCollectRoundLength) external;
 }

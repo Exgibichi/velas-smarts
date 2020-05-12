@@ -281,6 +281,7 @@ contract BlockRewardAuRaBase is UpgradeableOwned, IBlockRewardAuRa {
 
             // Choose new validators
             validatorSetContract.newValidatorSet();
+            stakingContract.executeParamsChange();
 
             // Snapshot total amounts staked into the pools
             uint256 i;
@@ -473,7 +474,7 @@ function isErcToNativeBridgeAllowed(address _addr) public view returns(bool) {
 
             address[] memory miningAddresses;
             uint256 i;
-            
+
             miningAddresses = validatorSetContract.getPendingValidators();
             for (i = 0; i < miningAddresses.length; i++) {
                 if (miningAddress == miningAddresses[i]) {

@@ -33,4 +33,5 @@ interface IStakingAuRa {
     function stakingEpochDuration() external view returns(uint256);
     function stakingEpochEndBlock() external view returns(uint256);
     function stakingEpochStartBlock() external view returns(uint256);
+    function executeParamsChange() external;
 }
