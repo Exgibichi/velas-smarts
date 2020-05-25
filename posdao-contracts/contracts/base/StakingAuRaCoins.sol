@@ -13,6 +13,13 @@ contract Sacrifice {
 
 /// @dev Implements staking and withdrawal logic.
 contract StakingAuRaCoins is StakingAuRaBase {
+  // =============================================== Storage ========================================================
+
+    // WARNING: since this contract is upgradeable, do not remove
+    // existing storage variables, do not change their order,
+    // and do not change their types!
+
+    mapping(address => bool) internal _miningClaimCallAllowed;
 
     // ================================================ Events ========================================================
 
@@ -44,6 +51,13 @@ contract StakingAuRaCoins is StakingAuRaBase {
         uint256 firstEpoch;
         uint256 lastEpoch;
 
+        // check if called from mining
+        address payable stakingAddress = validatorSetContract.stakingByMiningAddress(staker);
+        if (stakingAddress != address(0)) {
+            require(isMiningClaimCallAllowed(stakingAddress), "mining claim call is not allowed");
+            staker = stakingAddress;
+        }
+
         if (_poolStakingAddress != staker) { // this is a delegator
             firstEpoch = stakeFirstEpoch[_poolStakingAddress][staker];
             require(firstEpoch != 0);
@@ -66,7 +80,7 @@ contract StakingAuRaCoins is StakingAuRaBase {
             require(epoch < stakingEpoch);
 
             if (rewardWasTaken[_poolStakingAddress][staker][epoch]) continue;
-            
+
             uint256 reward;
 
             if (_poolStakingAddress != staker) { // this is a delegator
@@ -98,6 +112,20 @@ contract StakingAuRaCoins is StakingAuRaBase {
         }
 
         blockRewardContract.transferReward(rewardSum, staker);
+    }
+
+    function allowMiningClaimCall() onlyInitialized {
+        address staker = msg.sender;
+        _miningClaimCallAllowed[staker] = true;
+    }
+
+     function disallowMiningClaimCall() onlyInitialized {
+        address staker = msg.sender;
+        _miningClaimCallAllowed[staker] = false;
+   }
+
+    function isMiningClaimCallAllowed(address _staker) external view returns(bool)  {
+        return _miningClaimCallAllowed[_staker];
     }
 
     // =============================================== Getters ========================================================
@@ -181,5 +209,5 @@ contract StakingAuRaCoins is StakingAuRaBase {
         _stake(_toPoolStakingAddress, staker, _amount);
         emit PlacedStake(_toPoolStakingAddress, staker, stakingEpoch, _amount);
     }
-    
+
 }
