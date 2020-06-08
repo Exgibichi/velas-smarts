@@ -7,6 +7,7 @@ import "../interfaces/IValidatorSetAuRa.sol";
 import "../interfaces/IRandomAuRa.sol";
 import "../upgradeability/UpgradeableOwned.sol";
 import "../libs/SafeMath.sol";
+import "../interfaces/IRandomAuRa.sol";
 
 
 /// @dev Implements staking and withdrawal logic.
@@ -30,6 +31,9 @@ contract StakingAuRaBase is UpgradeableOwned, IStakingAuRa {
     mapping(address => address[]) internal _stakerPools;
     mapping(address => mapping(address => uint256)) internal _stakerPoolsIndexes;
     mapping(address => mapping(address => mapping(uint256 => uint256))) internal _stakeAmountByEpoch;
+    uint256 internal _pendingEpochDuration;
+    uint256 internal _pendingStakeWithdrawDisallowPeriod;
+    uint256 internal _pendingCollectRoundLength;
 
     uint256 internal _pendingEpochDuration;
     uint256 internal _pendingStakeWithdrawDisallowPeriod;
@@ -545,6 +549,50 @@ contract StakingAuRaBase is UpgradeableOwned, IStakingAuRa {
     /// @param _minStake The value of a new limit in Wei.
     function setDelegatorMinStake(uint256 _minStake) external onlyOwner onlyInitialized {
         delegatorMinStake = _minStake;
+    }
+function setStakingEpochDuration(uint256 _stakingEpochDuration) external onlyOwner onlyInitialized {
+      stakingEpochDuration = _stakingEpochDuration;
+}
+
+function setStakeWithdrawDisallowPeriod(uint256 _stakeWithdrawDisallowPeriod) external onlyOwner onlyInitialized {
+      stakeWithdrawDisallowPeriod = _stakeWithdrawDisallowPeriod;
+}
+
+    /// @dev Schedule stakingEpochDuration change
+    function scheduleParamsChange(
+        uint256 _newEpochDuration,
+        uint256 _newStakeWithdrawDisallowPeriod,
+        uint256 _newCollectRoundLength
+    ) external onlyOwner onlyInitialized {
+        require(_newEpochDuration != 0);
+        require(_newEpochDuration > _newStakeWithdrawDisallowPeriod);
+        require(_newEpochDuration % _newCollectRoundLength == 0);
+        require(_newCollectRoundLength % 2 == 0);
+        require(_newCollectRoundLength % validatorSetContract.MAX_VALIDATORS() == 0);
+
+        if (_newEpochDuration != 0)
+            _pendingEpochDuration = _newEpochDuration;
+        if (_newStakeWithdrawDisallowPeriod != 0)
+            _pendingStakeWithdrawDisallowPeriod = _newStakeWithdrawDisallowPeriod;
+        if (_newCollectRoundLength != 0)
+            _pendingCollectRoundLength = _newCollectRoundLength;
+    }
+
+    /// @dev Schedule stakingEpochDuration change
+    function executeParamsChange() external onlyBlockRewardContract onlyInitialized {
+        if (_pendingEpochDuration != 0 && stakingEpochDuration != _pendingEpochDuration) {
+            stakingEpochDuration = _pendingEpochDuration;
+            _pendingEpochDuration = 0;
+        }
+        if (_pendingStakeWithdrawDisallowPeriod != 0 && stakeWithdrawDisallowPeriod != _pendingStakeWithdrawDisallowPeriod) {
+            stakeWithdrawDisallowPeriod = _pendingStakeWithdrawDisallowPeriod;
+            _pendingStakeWithdrawDisallowPeriod = 0;
+        }
+        uint256 collectRoundLength = IRandomAuRa(validatorSetContract.randomContract()).collectRoundLength();
+        if (_pendingCollectRoundLength != 0 && collectRoundLength != _pendingCollectRoundLength) {
+            IRandomAuRa(validatorSetContract.randomContract()).changeCollectRoundLength(_pendingCollectRoundLength);
+            _pendingCollectRoundLength = 0;
+        }
     }
 
     /// @dev Schedule stakingEpochDuration change
@@ -1083,7 +1131,7 @@ contract StakingAuRaBase is UpgradeableOwned, IStakingAuRa {
         }
 
         stakeAmount[_poolStakingAddress][_staker] = newStakeAmount;
-        _stakeAmountByEpoch[_poolStakingAddress][_staker][stakingEpoch] = 
+        _stakeAmountByEpoch[_poolStakingAddress][_staker][stakingEpoch] =
             stakeAmountByCurrentEpoch(_poolStakingAddress, _staker).add(_amount);
         stakeAmountTotal[_poolStakingAddress] = stakeAmountTotal[_poolStakingAddress].add(_amount);
 
@@ -1130,7 +1178,7 @@ contract StakingAuRaBase is UpgradeableOwned, IStakingAuRa {
 
         stakeAmount[_poolStakingAddress][_staker] = newStakeAmount;
         uint256 amountByEpoch = stakeAmountByCurrentEpoch(_poolStakingAddress, _staker);
-        _stakeAmountByEpoch[_poolStakingAddress][_staker][stakingEpoch] = 
+        _stakeAmountByEpoch[_poolStakingAddress][_staker][stakingEpoch] =
             amountByEpoch >= _amount ? amountByEpoch - _amount : 0;
         stakeAmountTotal[_poolStakingAddress] = stakeAmountTotal[_poolStakingAddress].sub(_amount);
 

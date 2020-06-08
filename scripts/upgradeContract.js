@@ -15,7 +15,7 @@ async function upgradeContract(web3, contractName, contractAddress) {
     const bytecode = compiled.evm.bytecode.object*/
     const compiled = require(path.join('../posdao-contracts/build/contracts/', contractName + '.json'))
     console.log(compiled.contractName)
-  
+
     // deploy contract on new address
     const contract = new web3.eth.Contract(compiled.abi)
     const deploy = await contract.deploy({data: compiled.bytecode}).send({
@@ -24,7 +24,7 @@ async function upgradeContract(web3, contractName, contractAddress) {
       gasPrice: '0'
     })
     //console.log('deploy:', deploy)
-    
+
     const newAddress = deploy.options.address
     console.log('new address:', newAddress)
 

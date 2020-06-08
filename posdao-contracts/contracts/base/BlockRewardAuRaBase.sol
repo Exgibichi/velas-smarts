@@ -130,7 +130,7 @@ contract BlockRewardAuRaBase is UpgradeableOwned, IBlockRewardAuRa {
 
     /// @dev Ensures the caller is the `erc-to-native` bridge contract address.
     modifier onlyErcToNativeBridge {
-        require(_ercToNativeBridgeAllowed[msg.sender]);
+        require(_ercToNativeBridgeAllowed[msg.sender], "only erc-to-native-bridge allowed");
         _;
     }
 
@@ -180,8 +180,8 @@ contract BlockRewardAuRaBase is UpgradeableOwned, IBlockRewardAuRa {
     /// @param _amount The amount of native coins which must be minted for the `_receiver` address.
     /// @param _receiver The address for which the `_amount` of native coins must be minted.
     function addExtraReceiver(uint256 _amount, address _receiver) external onlyErcToNativeBridge {
-        require(_amount != 0);
-        require(_queueERInitialized);
+        require(_amount != 0,"amount cant be zero");
+        require(_queueERInitialized,"queueERInitialized is required");
         _enqueueExtraReceiver(_amount, _receiver, msg.sender);
         emit AddedReceiver(_amount, _receiver, msg.sender);
     }
@@ -366,8 +366,16 @@ contract BlockRewardAuRaBase is UpgradeableOwned, IBlockRewardAuRa {
     function extraReceiversQueueSize() public view returns(uint256) {
         return _queueERLast + 1 - _queueERFirst;
     }
+function isQueueERInitialized() public view returns(bool) {
+        return _queueERInitialized;
+    }
 
-    /// @dev Returns a boolean flag indicating if the `initialize` function has been called.
+function isErcToNativeBridgeAllowed(address _addr) public view returns(bool) {
+                 return _ercToNativeBridgeAllowed[_addr];
+             }
+
+    /// @dev Returns a boolean flag indicating if the `initialize` function has
+    //been called.
     function isInitialized() public view returns(bool) {
         return validatorSetContract != IValidatorSetAuRa(0);
     }
@@ -466,7 +474,7 @@ contract BlockRewardAuRaBase is UpgradeableOwned, IBlockRewardAuRa {
 
             address[] memory miningAddresses;
             uint256 i;
-            
+
             miningAddresses = validatorSetContract.getPendingValidators();
             for (i = 0; i < miningAddresses.length; i++) {
                 if (miningAddress == miningAddresses[i]) {
@@ -562,7 +570,7 @@ contract BlockRewardAuRaBase is UpgradeableOwned, IBlockRewardAuRa {
 
     // ============================================== Internal ========================================================
 
-    uint256 internal constant VALIDATOR_MIN_REWARD_PERCENT = 30; // 30%
+    uint256 internal constant VALIDATOR_MIN_REWARD_PERCENT = 40; // 40%
     uint256 internal constant REWARD_PERCENT_MULTIPLIER = 1000000;
 
     function _coinInflationAmount(uint256, address[] memory) internal view returns(uint256);

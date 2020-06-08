@@ -13,7 +13,7 @@ async function main() {
   console.log('Epoch duration:', await stakingContract.instance.methods.stakingEpochDuration().call())
   console.log('Stake withdraw:', await stakingContract.instance.methods.stakeWithdrawDisallowPeriod().call())
   console.log('Round Length:', await randomContract.instance.methods.collectRoundLength().call())
-  
+
   const resp = await stakingContract.instance.methods.scheduleParamsChange(8664, 720, 114).send({
     from: constants.OWNER,
     gas: '105000000',
@@ -24,7 +24,7 @@ async function main() {
   console.log("Epoch #", await stakingContract.instance.methods.stakingEpoch().call())
   await require('../utils/waitForNextStakingEpoch')(web3);
   console.log("Epoch #", await stakingContract.instance.methods.stakingEpoch().call())
-  
+
   console.log('Epoch duration:', await stakingContract.instance.methods.stakingEpochDuration().call())
   console.log('Stake withdraw:', await stakingContract.instance.methods.stakeWithdrawDisallowPeriod().call())
   console.log('Round Length:', await randomContract.instance.methods.collectRoundLength().call())

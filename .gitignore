@@ -2,7 +2,7 @@
 \#*#
 .#*
 *~
-
+.history
 # Vim backups
 .*.sw[po]
 
@@ -23,3 +23,4 @@ build
 
 #Mac OS specific
 .DS_Store
+.idea
