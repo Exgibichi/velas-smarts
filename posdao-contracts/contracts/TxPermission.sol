@@ -167,6 +167,15 @@ contract TxPermission is UpgradeableOwned, ITxPermission {
             }
         }
 
+        // check if sender is miner
+        address stakingAddress = validatorSetContract.stakingByMiningAddress(_sender);
+        if (stakingAddress != address(0) && _to == validatorSetContract.stakingContract()) {
+            // The rules for the StakingAuRa contract
+            if (signature == CLAIM_REWARD_SIGNATURE) {
+                return (CALL, false);
+            }
+        }
+
         if (_to == address(validatorSetContract)) {
             // The rules for the ValidatorSetAuRa contract
             if (signature == EMIT_INITIATE_CHANGE_SIGNATURE) {
@@ -275,6 +284,9 @@ contract TxPermission is UpgradeableOwned, ITxPermission {
 
     // bytes4(keccak256("revealNumber(uint256)"))
     bytes4 internal constant REVEAL_NUMBER_SIGNATURE = 0xfe7d567d;
+
+    // bytes4(keccak256("claimReward(uint256[],address)"))
+    bytes4 internal constant CLAIM_REWARD_SIGNATURE = 0x3ea15d62;
 
     /// @dev An internal function used by the `addAllowedSender` and `initialize` functions.
     /// @param _sender The address for which transactions of any type must be allowed.
