@@ -35,10 +35,6 @@ contract StakingAuRaBase is UpgradeableOwned, IStakingAuRa {
     uint256 internal _pendingStakeWithdrawDisallowPeriod;
     uint256 internal _pendingCollectRoundLength;
 
-    uint256 internal _pendingEpochDuration;
-    uint256 internal _pendingStakeWithdrawDisallowPeriod;
-    uint256 internal _pendingCollectRoundLength;
-
     // Reserved storage space to allow for layout changes in the future.
     uint256[22] private ______gapForInternal;
 
@@ -557,43 +553,6 @@ function setStakingEpochDuration(uint256 _stakingEpochDuration) external onlyOwn
 function setStakeWithdrawDisallowPeriod(uint256 _stakeWithdrawDisallowPeriod) external onlyOwner onlyInitialized {
       stakeWithdrawDisallowPeriod = _stakeWithdrawDisallowPeriod;
 }
-
-    /// @dev Schedule stakingEpochDuration change
-    function scheduleParamsChange(
-        uint256 _newEpochDuration,
-        uint256 _newStakeWithdrawDisallowPeriod,
-        uint256 _newCollectRoundLength
-    ) external onlyOwner onlyInitialized {
-        require(_newEpochDuration != 0);
-        require(_newEpochDuration > _newStakeWithdrawDisallowPeriod);
-        require(_newEpochDuration % _newCollectRoundLength == 0);
-        require(_newCollectRoundLength % 2 == 0);
-        require(_newCollectRoundLength % validatorSetContract.MAX_VALIDATORS() == 0);
-
-        if (_newEpochDuration != 0)
-            _pendingEpochDuration = _newEpochDuration;
-        if (_newStakeWithdrawDisallowPeriod != 0)
-            _pendingStakeWithdrawDisallowPeriod = _newStakeWithdrawDisallowPeriod;
-        if (_newCollectRoundLength != 0)
-            _pendingCollectRoundLength = _newCollectRoundLength;
-    }
-
-    /// @dev Schedule stakingEpochDuration change
-    function executeParamsChange() external onlyBlockRewardContract onlyInitialized {
-        if (_pendingEpochDuration != 0 && stakingEpochDuration != _pendingEpochDuration) {
-            stakingEpochDuration = _pendingEpochDuration;
-            _pendingEpochDuration = 0;
-        }
-        if (_pendingStakeWithdrawDisallowPeriod != 0 && stakeWithdrawDisallowPeriod != _pendingStakeWithdrawDisallowPeriod) {
-            stakeWithdrawDisallowPeriod = _pendingStakeWithdrawDisallowPeriod;
-            _pendingStakeWithdrawDisallowPeriod = 0;
-        }
-        uint256 collectRoundLength = IRandomAuRa(validatorSetContract.randomContract()).collectRoundLength();
-        if (_pendingCollectRoundLength != 0 && collectRoundLength != _pendingCollectRoundLength) {
-            IRandomAuRa(validatorSetContract.randomContract()).changeCollectRoundLength(_pendingCollectRoundLength);
-            _pendingCollectRoundLength = 0;
-        }
-    }
 
     /// @dev Schedule stakingEpochDuration change
     function scheduleParamsChange(
