@@ -34,7 +34,13 @@ module.exports = function (contractName, web3) {
                 abi: abi,
                 instance: new web3.eth.Contract(abi, constants.STAKING_CONTRACT_ADDRESS),
             };
-
+        case 'TxPermission':
+            abi = require('../posdao-contracts/build/contracts/TxPermission').abi;
+            return {
+                address: constants.TX_PERMISSION_ADDRESS,
+                abi: abi,
+                instance: new web3.eth.Contract(abi, constants.TX_PERMISSION_ADDRESS),
+            };
         case 'StakingToken':
             info = require('../parity-data/StakingToken');
             return {
