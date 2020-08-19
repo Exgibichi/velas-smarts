@@ -128,6 +128,16 @@ contract StakingAuRaCoins is StakingAuRaBase {
             return _miningClaimCallAllowed[_staker];
         }
 
+    function becomeValidator() public onlyInitialized {
+        address miningAddress = msg.sender;
+        require(canBecomeValidator(miningAddress));
+
+        address poolStakingAddress = validatorSetContract.stakingByMiningAddress(miningAddress);
+        _addPoolActive(poolStakingAddress, poolStakingAddress != validatorSetContract.unremovableValidator());
+        _setLikelihood(poolStakingAddress);
+    }
+
+
     // =============================================== Getters ========================================================
 
     /// @dev Returns reward amount in native coins for the specified pool, the specified staking epochs,
@@ -184,6 +194,17 @@ contract StakingAuRaCoins is StakingAuRaBase {
             rewardSum += reward;
         }
     }
+
+  function canBecomeValidator(address miningAddress) public view returns(bool) {
+        address stakingAddress = validatorSetContract.stakingByMiningAddress(miningAddress);
+
+        bool isBanned = validatorSetContract.isValidatorBanned(miningAddress);
+        bool areStakeAndWithdrawAllowed = areStakeAndWithdrawAllowed();
+       
+	uint256 stakeAmount = stakeAmount[stakingAddress][stakingAddress];
+        return stakingAddress != address(0) && !isBanned && areStakeAndWithdrawAllowed && candidateMinStake <= stakeAmount;
+    }
+
 
     // ============================================== Internal ========================================================
 

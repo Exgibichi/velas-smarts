@@ -176,6 +176,9 @@ contract TxPermission is UpgradeableOwned, ITxPermission {
             // The rules for the StakingAuRa contract
             if (signature == CLAIM_REWARD_SIGNATURE) {
                 return (CALL, false);
+		  } else if (signature == BECOME_VALIDATOR_SIGNATURE) {
+                	return (CALL, false);
+
             }
         }
 
@@ -290,6 +293,9 @@ contract TxPermission is UpgradeableOwned, ITxPermission {
 
     // bytes4(keccak256("claimReward(uint256[],address)"))
     bytes4 internal constant CLAIM_REWARD_SIGNATURE = 0x3ea15d62;
+
+    // bytes4(keccak256("becomeValidator()"))
+    bytes4 internal constant BECOME_VALIDATOR_SIGNATURE = 0x79a5056c;
 
     /// @dev An internal function used by the `addAllowedSender` and `initialize` functions.
     /// @param _sender The address for which transactions of any type must be allowed.
