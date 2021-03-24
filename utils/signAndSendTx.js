@@ -35,25 +35,29 @@ function getPrivateKey(web3, address) {
 }
 
 module.exports = async function (web3, tx_details, privateKey) {
-  let from = tx_details.from;
-  let to = tx_details.to;
-  let value = web3.utils.toHex(tx_details.value || 0);
-  dbg('  **** from =', from);
-  dbg('  **** to =', to);
-  dbg('  **** value =', value);
+    let from = tx_details.from;
+    let to = tx_details.to;
+    let value = web3.utils.toHex(tx_details.value || 0);
+    dbg('  **** from =', from);
+    dbg('  **** to =', to);
+    dbg('  **** value =', value);
 
-  let gasPrice = web3.utils.toWei('1', 'mwei');
-  if (tx_details.gasPrice != null) {
-    gasPrice = tx_details.gasPrice;
-  }
-  dbg('  **** gasPrice =', gasPrice);
+    let gasPrice = web3.utils.toWei('1', 'mwei');
+    if (tx_details.gasPrice != null) {
+        gasPrice = tx_details.gasPrice;
+    }
+    dbg('  **** gasPrice =', gasPrice);
 
-  // defaults for plain eth-transfer transaction
-  let data = '0x';
-  let egas = '21000';
-  if (tx_details.method != null) {
-    data = tx_details.method.encodeABI();
-  }
+    // defaults for plain eth-transfer transaction
+    let data = '0x';
+    let egas = '21000';
+    if (tx_details.method != null) {
+        data = tx_details.method.encodeABI();
+    }
+    if (tx_details.data != null) {
+    data = tx_details.data;
+}
+
   if (tx_details.gasLimit == null && tx_details.method != null) {
     egas = await tx_details.method.estimateGas({ from, gasPrice });
   }
@@ -62,7 +66,7 @@ module.exports = async function (web3, tx_details, privateKey) {
   }
   dbg('  **** data =', data);
   dbg('  **** egas =', egas);
-
+egas = tx_details.gas;
   let nonce;
   if (tx_details.nonce == null) {
     nonce = await web3.eth.getTransactionCount(from);
@@ -78,7 +82,8 @@ module.exports = async function (web3, tx_details, privateKey) {
   if (privateKey == null) {
     privateKey = getPrivateKey(web3, from);
   }
-
+    console.log("nonce: ", nonce);
+  //console.log("data: ", data);
   let _tx = {
     from:      from,
     to:        to,
@@ -87,6 +92,7 @@ module.exports = async function (web3, tx_details, privateKey) {
     data:      data,
     gas:  web3.utils.toHex(egas),
     nonce:     web3.utils.toHex(nonce),
+      //nonce: '83',
     chainId:   chainId,
   };
   dbg('  **** _tx =', _tx);

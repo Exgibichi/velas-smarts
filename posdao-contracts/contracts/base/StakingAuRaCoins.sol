@@ -51,13 +51,6 @@ contract StakingAuRaCoins is StakingAuRaBase {
         uint256 firstEpoch;
         uint256 lastEpoch;
 
-        // check if called from mining
-        address payable stakingAddress = validatorSetContract.stakingByMiningAddress(staker);
-        if (stakingAddress != address(0)) {
-            require(isMiningClaimCallAllowed(stakingAddress), "mining claim call is not allowed");
-            staker = stakingAddress;
-        }
-
         if (_poolStakingAddress != staker) { // this is a delegator
             firstEpoch = stakeFirstEpoch[_poolStakingAddress][staker];
             require(firstEpoch != 0);
@@ -114,12 +107,12 @@ contract StakingAuRaCoins is StakingAuRaBase {
         blockRewardContract.transferReward(rewardSum, staker);
     }
 
-    function allowMiningClaimCall() onlyInitialized {
+    function allowMiningClaimCall() public onlyInitialized {
         address staker = msg.sender;
         _miningClaimCallAllowed[staker] = true;
     }
 
-     function disallowMiningClaimCall() onlyInitialized {
+     function disallowMiningClaimCall() public onlyInitialized {
         address staker = msg.sender;
         _miningClaimCallAllowed[staker] = false;
    }

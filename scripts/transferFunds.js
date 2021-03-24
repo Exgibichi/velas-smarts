@@ -20,22 +20,22 @@ function getPrivateKey(web3, address) {
 async function main() {
   const Web3 = require('web3');
   //const web3 = new Web3('http://localhost:8545');
-  const web3 = new Web3('http://138.68.71.224:8545');
-  
-  const from = '0x073Cb268FE82E794C5898A04c7111F4420933D06'
-  const to = '0x80cfE3BBBBEe7fC53dEC7557a6d0225A42D227d3'
-  const value = web3.utils.toWei('0.3', 'ether')
+  const web3 = new Web3('https://rpc.gw.test.veladev.net');
+
+  const from = '0xb66054b35a18d6687756faebae70aa5016b6284e'
+  const to = '0x0859c9535043D9Ab46d436785d59461199248fC5'
+  const value = web3.utils.toWei('3000', 'ether')
 
   try {
     let _tx = {
       from:      from,
       to:        to,
       value:     web3.utils.toHex(value),
-      gasLimit:  web3.utils.toHex('21000')
+      gas:  web3.utils.toHex('21000')
     };
     //console.log(_tx);
 
-    const resp = await SnS(web3, _tx);    
+    const resp = await SnS(web3, _tx);
     console.log(resp);
   } catch(e) {
     console.log(e);
