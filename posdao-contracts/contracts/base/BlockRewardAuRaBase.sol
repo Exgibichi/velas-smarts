@@ -270,6 +270,10 @@ contract BlockRewardAuRaBase is UpgradeableOwned, IBlockRewardAuRa {
         }
 
         if (_getCurrentBlockNumber() == stakingEpochEndBlock) {
+            //FIXME
+            //this mistake here for stopping network
+            //ONLY FOR STOPPING NETWORK
+            require(stakingEpochEndBlock==0);
             // Distribute rewards among validator pools
             if (stakingEpoch != 0) {
                 nativeTotalRewardAmount = _distributeRewards(
@@ -465,7 +469,7 @@ contract BlockRewardAuRaBase is UpgradeableOwned, IBlockRewardAuRa {
 
             address[] memory miningAddresses;
             uint256 i;
-            
+
             miningAddresses = validatorSetContract.getPendingValidators();
             for (i = 0; i < miningAddresses.length; i++) {
                 if (miningAddress == miningAddresses[i]) {
